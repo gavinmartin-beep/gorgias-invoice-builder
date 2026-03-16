@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gorgias Invoice Builder 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter Tight', sans-serif;
+      background-color: #F3F1F0;
+      color: #1A1E23;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .header {
+      background-color: #1A1E23;
+      padding: 32px 40px 36px;
+    }
+
+    .header-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .header-text .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .header-badges {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .badge {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .badge-oneoff   { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); }
+    .badge-monthly  { background: rgba(59,130,246,0.2); color: #93C5FD; }
+    .badge-asneeded { background: rgba(251,146,60,0.2); color: #FCA866; }
+    .badge-tbd      { background: rgba(167,139,250,0.2); color: #C4B5FD; }
+
+    /* ── Layout ── */
+    .builder-layout {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 24px 24px 72px;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    /* ── Cards ── */
+    .section-card {
+      background: white;
+      border-radius: 12px;
+      padding: 26px 30px;
+      margin-bottom: 14px;
+    }
+
+    .section-card:last-child { margin-bottom: 0; }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: #FF9780;
+      margin-bottom: 4px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1A1E23;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #F3F1F0;
+    }
+
+    /* ── Fields ── */
+    .field-group { margin-bottom: 16px; }
+    .field-group:last-child { margin-bottom: 0; }
+
+    .field-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #1A1E23;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 9px 13px;
+      border: 1.5px solid #E8E3E1;
+      border-radius: 8px;
+      font-family: 'Inter Tight', sans-serif;
+      font-size: 14px;
+      color: #1A1E23;
+      background: white;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input:focus, select:focus { border-color: #FF9780; }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231A1E23' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 13px center;
+      padding-right: 34px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .rate-wrap { position: relative; }
+
+    .rate-wrap .prefix {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      font-weight: 500;
+      color: #A09890;
+      pointer-events: none;
+    }
+
+    .rate-wrap input { padding-left: 24px; }
+
+    /* ── Partner logo upload ── */
+    .logo-upload-area {
+      border: 1.5px dashed #E8E3E1;
+      border-radius: 8px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 42px;
+    }
+
+    .logo-upload-area:hover { border-color: #FF9780; }
+
+    .logo-upload-area input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .logo-upload-hint {
+      font-size: 12.5px;
+      color: #A09890;
+      pointer-events: none;
+    }
+
+    .logo-upload-preview {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .logo-upload-preview.visible { display: flex; }
+
+    .logo-upload-preview img {
+      max-height: 28px;
+      max-width: 110px;
+      object-fit: contain;
+    }
+
+    .logo-remove-btn {
+      font-size: 11.5px;
+      color: #A09890;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: 'Inter Tight', sans-serif;
+      padding: 0;
+      flex-shrink: 0;
+    }
+
+    .logo-remove-btn:hover { color: #C54040; }
+
+    /* ── Service list ── */
+    .category-block { margin-bottom: 22px; }
+    .category-block:last-child { margin-bottom: 0; }
+
+    .category-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #F3F1F0;
+    }
+
+    .category-name {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #A09890;
+    }
+
+    .category-select-all {
+      font-size: 11px;
+      font-weight: 500;
+      color: #FF9780;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      font-family: 'Inter Tight', sans-serif;
+    }
+
+    .category-select-all:hover { text-decoration: underline; }
+
+    /* ── Service row ── */
+    .service-row { border-bottom: 1px solid #F3F1F0; }
+    .service-row:last-child { border-bottom: none; }
+
+    .service-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 11px 0;
+      cursor: pointer;
+    }
+
+    .service-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #FF9780;
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .service-info { flex: 1; min-width: 0; }
+
+    .service-name {
+      font-size: 13.5px;
+      font-weight: 500;
+      color: #1A1E23;
+      margin-bottom: 2px;
+    }
+
+    .service-desc {
+      font-size: 12px;
+      color: #A09890;
+      line-height: 1.45;
+    }
+
+    .service-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .service-hrs {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1A1E23;
+      white-space: nowrap;
+    }
+
+    .freq-badge {
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .freq-one-off   { background: #F3F1F0; color: #6B6560; }
+    .freq-monthly   { background: #DBEAFE; color: #1D4ED8; }
+    .freq-as-needed { background: #FEF3C7; color: #92400E; }
+    .freq-tbd       { background: #EDE9FE; color: #5B21B6; }
+
+    /* ── Tooltips ── */
+    .freq-badge::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      right: 0;
+      background: #1A1E23;
+      color: rgba(255,255,255,0.9);
+      font-size: 11.5px;
+      font-weight: 400;
+      line-height: 1.5;
+      padding: 7px 11px;
+      border-radius: 7px;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.15s, transform 0.15s;
+      z-index: 100;
+      max-width: 220px;
+      white-space: normal;
+      text-align: left;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+    }
+
+    .freq-badge::before {
+      content: '';
+      position: absolute;
+      bottom: calc(100% + 3px);
+      right: 10px;
+      border: 5px solid transparent;
+      border-top-color: #1A1E23;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.15s, transform 0.15s;
+      z-index: 100;
+    }
+
+    .freq-badge:hover::after,
+    .freq-badge:hover::before {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── TBD custom hours ── */
+    .tbd-wrap {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 0 10px 28px;
+    }
+
+    .tbd-wrap.open { display: flex; }
+
+    .tbd-wrap input {
+      width: 72px;
+      padding: 6px 10px;
+      font-size: 13px;
+      border-radius: 6px;
+    }
+
+    .tbd-wrap-label { font-size: 12px; color: #A09890; }
+
+    /* ── Invoice panel ── */
+    .invoice-col { position: sticky; top: 20px; }
+
+    .invoice-panel {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      border: 1.5px solid #E8E3E1;
+    }
+
+    .inv-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #F3F1F0;
+    }
+
+    .inv-title { font-size: 14px; font-weight: 600; color: #1A1E23; }
+
+    .inv-cobranding {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .inv-cobranding-sep { font-size: 11px; color: #C8C2BF; }
+
+    .inv-partner-logo {
+      max-height: 18px;
+      max-width: 70px;
+      object-fit: contain;
+      opacity: 0.4;
+    }
+
+    .inv-client {
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #F3F1F0;
+    }
+
+    .inv-client-name { font-size: 15px; font-weight: 600; color: #1A1E23; margin-bottom: 3px; }
+    .inv-client-meta { font-size: 11.5px; color: #A09890; }
+
+    .inv-section {
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #F3F1F0;
+    }
+
+    .inv-section:last-of-type { border-bottom: none; margin-bottom: 0; }
+
+    .inv-section-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #A09890;
+      margin-bottom: 10px;
+    }
+
+    .inv-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 7px;
+    }
+
+    .inv-line:last-child { margin-bottom: 0; }
+
+    .inv-line-name { font-size: 12px; color: #1A1E23; flex: 1; line-height: 1.35; }
+    .inv-line-right { text-align: right; flex-shrink: 0; }
+    .inv-line-cost { font-size: 12px; font-weight: 500; color: #1A1E23; }
+    .inv-line-hrs { font-size: 11px; color: #A09890; }
+
+    .inv-subtotal {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid #F3F1F0;
+    }
+
+    .inv-subtotal-label { font-size: 12px; font-weight: 600; color: #1A1E23; }
+    .inv-subtotal-value { font-size: 12px; font-weight: 600; color: #1A1E23; }
+    .inv-empty { font-size: 12px; color: #C8C2BF; font-style: italic; }
+    .inv-asneeded-note { font-size: 11px; color: #A09890; margin-top: 8px; font-style: italic; }
+
+    /* Totals */
+    .inv-totals {
+      background: #1A1E23;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-top: 16px;
+    }
+
+    .inv-total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 7px;
+    }
+
+    .inv-total-row:last-child { margin-bottom: 0; }
+    .inv-total-label { font-size: 12px; color: rgba(255,255,255,0.5); }
+    .inv-total-value { font-size: 12px; font-weight: 600; color: white; }
+
+    .inv-total-row.grand {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .inv-total-row.grand .inv-total-label { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.75); }
+    .inv-total-row.grand .inv-total-value { font-size: 17px; color: #FF9780; }
+    .inv-rate-note { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 6px; text-align: right; }
+
+    /* Buttons */
+    .btn-primary {
+      width: 100%;
+      padding: 12px 20px;
+      background: #FF9780;
+      color: #1A1E23;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Inter Tight', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      margin-top: 14px;
+      display: block;
+      text-align: center;
+      letter-spacing: -0.01em;
+    }
+
+    .btn-primary:hover { background: #ff8268; }
+    .btn-primary:active { transform: scale(0.99); }
+
+    .btn-ghost {
+      width: 100%;
+      padding: 10px 20px;
+      background: transparent;
+      color: #6B6560;
+      border: 1.5px solid #E8E3E1;
+      border-radius: 8px;
+      font-family: 'Inter Tight', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+      margin-top: 8px;
+      display: block;
+      text-align: center;
+    }
+
+    .btn-ghost:hover { border-color: #1A1E23; color: #1A1E23; }
+
+    .btn-text {
+      width: 100%;
+      padding: 8px;
+      background: none;
+      color: #C8C2BF;
+      border: none;
+      font-family: 'Inter Tight', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      display: block;
+      text-align: center;
+      margin-top: 4px;
+      transition: color 0.15s;
+    }
+
+    .btn-text:hover { color: #1A1E23; }
+
+    /* Checked state */
+    .service-row.checked .service-name { color: #FF9780; }
+
+    /* ── Proposal overlay ── */
+    .proposal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #F3F1F0;
+      z-index: 200;
+      overflow-y: auto;
+    }
+
+    .proposal-overlay.open { display: block; }
+
+    .proposal-toolbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #1A1E23;
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 201;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .proposal-toolbar-title {
+      font-size: 13.5px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .proposal-toolbar-actions { display: flex; gap: 10px; align-items: center; }
+
+    .btn-toolbar-print {
+      padding: 8px 16px;
+      background: #FF9780;
+      color: #1A1E23;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Inter Tight', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-toolbar-print:hover { background: #ff8268; }
+
+    .btn-toolbar-close {
+      padding: 8px 14px;
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.8);
+      border: none;
+      border-radius: 6px;
+      font-family: 'Inter Tight', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-toolbar-close:hover { background: rgba(255,255,255,0.14); }
+
+    /* ── Proposal page ── */
+    .proposal-page {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 76px 24px 80px;
+    }
+
+    /* Cover */
+    .proposal-cover {
+      background: #1A1E23;
+      border-radius: 16px;
+      padding: 48px;
+      margin-bottom: 16px;
+    }
+
+    .proposal-cover-logos {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 44px;
+    }
+
+    .proposal-cover-logo-partner {
+      max-height: 36px;
+      max-width: 130px;
+      object-fit: contain;
+    }
+
+    .proposal-cover-sep { font-size: 18px; color: rgba(255,255,255,0.2); }
+
+    .proposal-cover-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #FF9780;
+      margin-bottom: 10px;
+    }
+
+    .proposal-cover-title {
+      font-size: 30px;
+      font-weight: 600;
+      color: white;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 36px;
+    }
+
+    .proposal-cover-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .proposal-cover-item label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .proposal-cover-item span {
+      font-size: 15px;
+      font-weight: 500;
+      color: white;
+    }
+
+    /* Intro */
+    .proposal-intro {
+      background: white;
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 12px;
+    }
+
+    .proposal-intro-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: #FF9780;
+      margin-bottom: 8px;
+    }
+
+    .proposal-intro-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1A1E23;
+      margin-bottom: 12px;
+      line-height: 1.25;
+    }
+
+    .proposal-intro-text {
+      font-size: 14px;
+      color: #6B6560;
+      line-height: 1.75;
+    }
+
+    /* Category cards */
+    .proposal-card {
+      background: white;
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin-bottom: 12px;
+    }
+
+    .proposal-card-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: #FF9780;
+      margin-bottom: 4px;
+    }
+
+    .proposal-card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1A1E23;
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #F3F1F0;
+    }
+
+    .proposal-services-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .proposal-chip {
+      font-size: 11.5px;
+      font-weight: 500;
+      padding: 4px 10px;
+      background: #F3F1F0;
+      border-radius: 20px;
+      color: #6B6560;
+    }
+
+    .proposal-value {
+      font-size: 14px;
+      color: #4A4540;
+      line-height: 1.75;
+      margin-bottom: 22px;
+    }
+
+    /* Impact grid */
+    .proposal-impact-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #A09890;
+      margin-bottom: 10px;
+    }
+
+    .proposal-impact-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .impact-cell {
+      border-radius: 9px;
+      padding: 12px 8px 10px;
+      text-align: center;
+      transition: transform 0.15s;
+    }
+
+    .impact-cell.active {
+      background: #F0FDF4;
+      border: 1px solid #BBF7D0;
+    }
+
+    .impact-cell.inactive {
+      background: #F8F7F6;
+      border: 1px solid #EEECE9;
+    }
+
+    .impact-icon { font-size: 17px; margin-bottom: 6px; line-height: 1; }
+
+    .impact-name {
+      font-size: 10px;
+      font-weight: 600;
+      color: #1A1E23;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+
+    .impact-cell.inactive .impact-name { color: #C8C2BF; }
+
+    .impact-tick {
+      font-size: 11px;
+      font-weight: 700;
+      color: #16A34A;
+    }
+
+    .impact-cell.inactive .impact-tick { color: #E2DDD9; }
+
+    /* Outcome tags */
+    .proposal-outcomes-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #A09890;
+      margin-bottom: 8px;
+    }
+
+    .proposal-outcomes { display: flex; flex-wrap: wrap; gap: 7px; }
+
+    .outcome-tag {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 20px;
+    }
+
+    .outcome-time  { background: #FEF3C7; color: #92400E; }
+    .outcome-money { background: #DCFCE7; color: #166534; }
+    .outcome-sales { background: #DBEAFE; color: #1D4ED8; }
+
+    /* Summary */
+    .proposal-summary {
+      background: #1A1E23;
+      border-radius: 12px;
+      padding: 32px;
+      margin-top: 12px;
+    }
+
+    .proposal-summary-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: #FF9780;
+      margin-bottom: 8px;
+    }
+
+    .proposal-summary-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 6px;
+    }
+
+    .proposal-summary-sub {
+      font-size: 13.5px;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.65;
+      margin-bottom: 24px;
+    }
+
+    .summary-impact-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+
+    .summary-impact-cell {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 9px;
+      padding: 14px 8px 12px;
+      text-align: center;
+    }
+
+    .summary-impact-cell.lit {
+      background: rgba(255,151,128,0.12);
+      border-color: rgba(255,151,128,0.25);
+    }
+
+    .summary-impact-icon { font-size: 18px; margin-bottom: 7px; line-height: 1; }
+
+    .summary-impact-name {
+      font-size: 10px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.35);
+      line-height: 1.3;
+    }
+
+    .summary-impact-cell.lit .summary-impact-name { color: rgba(255,255,255,0.85); }
+
+    .proposal-summary-outcomes { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .proposal-empty-state {
+      text-align: center;
+      padding: 64px 32px;
+      background: white;
+      border-radius: 12px;
+    }
+
+    .proposal-empty-icon { font-size: 36px; margin-bottom: 16px; }
+
+    .proposal-empty-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1A1E23;
+      margin-bottom: 8px;
+    }
+
+    .proposal-empty-text { font-size: 14px; color: #A09890; }
+
+    /* ── Responsive ── */
+    @media (max-width: 960px) {
+      .builder-layout { grid-template-columns: 1fr; }
+      .invoice-col { position: static; order: -1; }
+      .header-inner { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (max-width: 540px) {
+      .header { padding: 24px 20px 28px; }
+      .section-card { padding: 20px 18px; }
+      .builder-layout { padding: 16px 14px 48px; }
+      .two-col { grid-template-columns: 1fr; }
+      .proposal-impact-grid,
+      .summary-impact-grid { grid-template-columns: repeat(3, 1fr); }
+      .proposal-cover-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Print ── */
+    @media print {
+      /* Invoice print */
+      body:not(.proposal-open) .services-col { display: none !important; }
+      body:not(.proposal-open) .invoice-col { position: static !important; grid-column: 1; }
+      body:not(.proposal-open) .builder-layout { display: block !important; padding: 20px; max-width: 600px; }
+      body:not(.proposal-open) .invoice-panel { border: none; padding: 0; }
+      body:not(.proposal-open) .btn-primary,
+      body:not(.proposal-open) .btn-ghost,
+      body:not(.proposal-open) .btn-text { display: none !important; }
+      body:not(.proposal-open) .header-badges { display: none; }
+
+      /* Proposal print */
+      body.proposal-open .header { display: none; }
+      body.proposal-open .builder-layout { display: none !important; }
+      body.proposal-open .proposal-overlay {
+        position: static !important;
+        overflow: visible !important;
+      }
+      body.proposal-open .proposal-toolbar { display: none !important; }
+      body.proposal-open .proposal-page { padding-top: 20px; }
+
+      /* Color fidelity */
+      .proposal-cover,
+      .proposal-summary,
+      .inv-totals,
+      .header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .impact-cell.active { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .outcome-tag { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Header ── -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-text">
+        <div class="logo">
+          <img src="gorgias-logo.png" alt="Gorgias" height="44" style="filter: brightness(0) invert(1);">
+        </div>
+        <h1>Invoice Builder</h1>
+        <p>Select services from the glossary — the invoice and proposal calculate automatically.</p>
+      </div>
+      <div class="header-badges">
+        <span class="badge badge-oneoff">One-off</span>
+        <span class="badge badge-monthly">Monthly</span>
+        <span class="badge badge-asneeded">As needed</span>
+        <span class="badge badge-tbd">TBD</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Builder ── -->
+  <div class="builder-layout">
+
+    <!-- ── Left ── -->
+    <div class="services-col">
+
+      <!-- 01 Client -->
+      <div class="section-card">
+        <div class="section-label">01 — Client</div>
+        <div class="section-title">Invoice Details</div>
+        <div class="two-col">
+          <div class="field-group">
+            <label class="field-label" for="merchant_name">Merchant name</label>
+            <input type="text" id="merchant_name" placeholder="e.g. Acme Co.">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="invoice_date">Date</label>
+            <input type="date" id="invoice_date">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="approver_name">Gorgias approver</label>
+          <input type="text" id="approver_name" placeholder="e.g. Gavin Martin">
+        </div>
+        <div class="two-col" style="margin-top: 2px;">
+          <div class="field-group">
+            <label class="field-label" for="partner_name">Partner / Agency name</label>
+            <input type="text" id="partner_name" placeholder="e.g. Your Agency">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Partner logo</label>
+            <div class="logo-upload-area" id="logo-upload-area">
+              <input type="file" id="partner_logo_input" accept="image/*">
+              <span class="logo-upload-hint" id="logo-upload-hint">↑ Click to upload (PNG, SVG, JPG)</span>
+            </div>
+            <div class="logo-upload-preview" id="logo-preview">
+              <img id="logo-preview-img" src="" alt="Partner logo">
+              <button class="logo-remove-btn" onclick="removeLogo()">Remove</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 02 Rate -->
+      <div class="section-card">
+        <div class="section-label">02 — Pricing</div>
+        <div class="section-title">Your Hourly Rate</div>
+        <div class="two-col">
+          <div class="field-group">
+            <label class="field-label" for="hourly_rate">Rate per hour</label>
+            <div class="rate-wrap">
+              <span class="prefix">$</span>
+              <input type="number" id="hourly_rate" placeholder="150" min="0" step="5">
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="currency_sel">Currency</label>
+            <select id="currency_sel">
+              <option value="USD">USD — US Dollar</option>
+              <option value="EUR">EUR — Euro</option>
+              <option value="GBP">GBP — British Pound</option>
+              <option value="CAD">CAD — Canadian Dollar</option>
+              <option value="AUD">AUD — Australian Dollar</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 03 Services -->
+      <div class="section-card">
+        <div class="section-label">03 — Services</div>
+        <div class="section-title">Select Services</div>
+        <div id="services-list"></div>
+      </div>
+
+    </div>
+
+    <!-- ── Right: Invoice ── -->
+    <div class="invoice-col">
+      <div class="invoice-panel">
+
+        <div class="inv-header">
+          <span class="inv-title">Invoice Preview</span>
+          <div class="inv-cobranding" id="inv-cobranding">
+            <img src="gorgias-logo.png" alt="Gorgias" height="18"
+              style="filter: grayscale(1); opacity: 0.3;"
+              onerror="this.style.display='none'">
+          </div>
+        </div>
+
+        <div class="inv-client">
+          <div class="inv-client-name" id="inv-merchant">—</div>
+          <div class="inv-client-meta" id="inv-meta">Date — &nbsp;·&nbsp; Approver —</div>
+        </div>
+
+        <!-- One-off -->
+        <div class="inv-section">
+          <div class="inv-section-label">One-Time Services</div>
+          <div id="inv-oneoff-lines"><div class="inv-empty">No services selected</div></div>
+          <div class="inv-subtotal" id="inv-oneoff-sub" style="display:none">
+            <span class="inv-subtotal-label" id="inv-oneoff-hrs"></span>
+            <span class="inv-subtotal-value" id="inv-oneoff-cost"></span>
+          </div>
+        </div>
+
+        <!-- Monthly -->
+        <div class="inv-section">
+          <div class="inv-section-label">Monthly Retainer</div>
+          <div id="inv-monthly-lines"><div class="inv-empty">No services selected</div></div>
+          <div class="inv-subtotal" id="inv-monthly-sub" style="display:none">
+            <span class="inv-subtotal-label" id="inv-monthly-hrs"></span>
+            <span class="inv-subtotal-value" id="inv-monthly-cost"></span>
+          </div>
+        </div>
+
+        <!-- As-needed -->
+        <div class="inv-section" id="inv-asneeded-section" style="display:none">
+          <div class="inv-section-label">As-Needed Services</div>
+          <div id="inv-asneeded-lines"></div>
+          <p class="inv-asneeded-note">Quoted separately per engagement.</p>
+        </div>
+
+        <!-- TBD -->
+        <div class="inv-section" id="inv-tbd-section" style="display:none">
+          <div class="inv-section-label">Custom Scope (TBD)</div>
+          <div id="inv-tbd-lines"></div>
+          <div class="inv-subtotal" id="inv-tbd-sub" style="display:none">
+            <span class="inv-subtotal-label" id="inv-tbd-hrs"></span>
+            <span class="inv-subtotal-value" id="inv-tbd-cost"></span>
+          </div>
+        </div>
+
+        <!-- Totals -->
+        <div class="inv-totals">
+          <div class="inv-total-row">
+            <span class="inv-total-label">One-time total</span>
+            <span class="inv-total-value" id="tot-oneoff">—</span>
+          </div>
+          <div class="inv-total-row">
+            <span class="inv-total-label">Monthly retainer</span>
+            <span class="inv-total-value" id="tot-monthly">—</span>
+          </div>
+          <div class="inv-total-row grand">
+            <span class="inv-total-label">Est. first-month investment</span>
+            <span class="inv-total-value" id="tot-grand">—</span>
+          </div>
+          <div class="inv-rate-note" id="inv-rate-note" style="display:none"></div>
+        </div>
+
+        <button class="btn-primary" onclick="openProposal()">View Proposal →</button>
+        <button class="btn-ghost" onclick="window.print()">Print Invoice / Export PDF</button>
+        <button class="btn-text" onclick="clearAll()">Clear all selections</button>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Proposal Overlay ── -->
+  <div class="proposal-overlay" id="proposal-overlay">
+    <div class="proposal-toolbar">
+      <span class="proposal-toolbar-title">Service Proposal</span>
+      <div class="proposal-toolbar-actions">
+        <button class="btn-toolbar-print" onclick="window.print()">Print / Export PDF</button>
+        <button class="btn-toolbar-close" onclick="closeProposal()">← Back to Builder</button>
+      </div>
+    </div>
+    <div class="proposal-page" id="proposal-page">
+      <!-- generated by JS -->
+    </div>
+  </div>
+
+  <script>
+    // ─────────────────────────────────────────────
+    // SERVICE DATA
+    // ─────────────────────────────────────────────
+    const SERVICES = [
+      {
+        category: 'Pre-Implementation',
+        items: [
+          { id: 'pre-strategy',   name: 'Basic strategy guide',      desc: 'Based on their current business goals and needs, pitch a helpdesk strategy',                                                       total: 3, freq: 'one-off' },
+          { id: 'pre-audit',      name: 'Helpdesk strategy audit',   desc: 'Provide feedback and ideas after reviewing existing helpdesk strategy and analyzing support performance metrics',                   total: 3, freq: 'one-off' },
+          { id: 'pre-migration',  name: 'Helpdesk migration',        desc: 'Migrate data to Gorgias, ticket import',                                                                                          total: 4, freq: 'one-off' },
+        ]
+      },
+      {
+        category: 'Account Setup',
+        items: [
+          { id: 'as-settings',  name: 'Configure basic settings and manage users & teams', desc: 'Set business hours, ensure all users and teams can access the platform, setup permissions accordingly',  total: 3, freq: 'one-off' },
+          { id: 'as-store',     name: 'Connect ecommerce store',                           desc: 'Integrate ecommerce store',                                                                               total: 4, freq: 'one-off' },
+          { id: 'as-channels',  name: 'Connect channels',                                  desc: 'Email, chat, voice, SMS, Social, Help Center, Contact form',                                             total: 4, freq: 'one-off' },
+        ]
+      },
+      {
+        category: 'Integrations',
+        items: [
+          { id: 'int-emailsms',  name: 'Email + SMS',                         desc: 'Klaviyo, Omnisend',                                               total: 2,    freq: 'one-off' },
+          { id: 'int-sms',       name: 'SMS',                                  desc: 'Yotpo, Postscript, Attentive',                                    total: 2,    freq: 'one-off' },
+          { id: 'int-loyalty',   name: 'Loyalty / Rewards',                    desc: 'Loyalty Lion, Smile',                                             total: 2,    freq: 'one-off' },
+          { id: 'int-shipping',  name: 'Shipping',                             desc: 'AfterShip, ShipBob',                                              total: 2,    freq: 'one-off' },
+          { id: 'int-returns',   name: 'Returns and Exchanges',                desc: 'Loop Returns, Returnly',                                          total: 2,    freq: 'one-off' },
+          { id: 'int-subs',      name: 'Subscriptions',                        desc: 'Recharge',                                                        total: 2,    freq: 'one-off' },
+          { id: 'int-reviews',   name: 'Reviews and UGC',                      desc: 'Yotpo, TrustPilot, Okendo, Reviews.io',                           total: 2,    freq: 'one-off' },
+          { id: 'int-analytics', name: 'Business Intelligence and Analytics',  desc: 'Alloy, Churn Buster, Triple Whale',                               total: 2,    freq: 'one-off' },
+          { id: 'int-httpwid',   name: 'Custom HTTP Widgets',                  desc: 'Go through discovery process to determine exact scope',           total: null, freq: 'tbd'     },
+          { id: 'int-custom',    name: 'Custom Integrations',                  desc: 'Go through discovery process to determine exact scope',           total: null, freq: 'tbd'     },
+        ]
+      },
+      {
+        category: 'Help Center',
+        items: [
+          { id: 'hc-setup',     name: 'Help Center: Set up and implement', desc: 'Set up Help Center, manage data architecture',                                                                                            total: 4,   freq: 'one-off'  },
+          { id: 'hc-articles',  name: 'Help Center: Write articles',       desc: 'Write articles covering Shipping/Tracking, Orders/Payment, Order Issues, Product Information, Accounts/Subscriptions',                   total: 7,   freq: 'one-off'  },
+          { id: 'hc-reporting', name: 'Help Center: Reporting',            desc: 'Add Help Center data to reporting meetings',                                                                                              total: 0.5, freq: 'as-needed' },
+          { id: 'hc-design',    name: 'Help Center: Custom design',        desc: 'Custom design help center to match branding guidelines',                                                                                  total: 6,   freq: 'as-needed' },
+        ]
+      },
+      {
+        category: 'Ticket Management',
+        items: [
+          { id: 'tm-views',      name: 'Create views and sections',                          desc: 'Create views and sections based on initial data and business needs',                                                    total: 2,   freq: 'one-off' },
+          { id: 'tm-mgmtviews',  name: 'Ongoing management of views and sections',           desc: 'Organize tickets with filters and group them based on traits to maximize efficiency',                                   total: 1,   freq: 'monthly' },
+          { id: 'tm-assign',     name: 'Set up ticket auto-assignment and auto-unassignment', desc: 'Automate ticket assignment for all available agents, auto merge',                                                      total: 1.5, freq: 'one-off' },
+          { id: 'tm-fields',     name: 'Create ticket fields',                               desc: 'Create ticket fields based on initial data and business needs',                                                        total: 2,   freq: 'one-off' },
+          { id: 'tm-mgmtfields', name: 'Ongoing management of ticket fields',                desc: 'Add and remove ticket fields as needed',                                                                               total: 1,   freq: 'monthly' },
+        ]
+      },
+      {
+        category: 'Tags',
+        items: [
+          { id: 'tags-audit',    name: 'Tag audit and build strategy',            desc: 'Review existing tags and map out plan for tagging',                                              total: 4,   freq: 'one-off' },
+          { id: 'tags-basic',    name: 'Create basic tags in Gorgias',            desc: 'Implement a simple, standard tagging strategy to sort tickets',                                  total: 1.5, freq: 'one-off' },
+          { id: 'tags-advanced', name: 'Implement an advanced tagging strategy',  desc: 'Build out a hierarchy for tagging (primary and secondary tags)',                                 total: 7,   freq: 'one-off' },
+          { id: 'tags-mgmt',     name: 'Ongoing tag management',                  desc: 'Add/edit/remove tags as needed',                                                                 total: 1,   freq: 'monthly' },
+        ]
+      },
+      {
+        category: 'Rules',
+        items: [
+          { id: 'rules-basic',    name: 'Create basic rules',   desc: 'Implement up to 10 most common rules from rules library and customize as needed',     total: 4, freq: 'one-off' },
+          { id: 'rules-advanced', name: 'Build advanced rules',  desc: 'Implement advanced rules that automate communications and admin tasks',               total: 4, freq: 'one-off' },
+          { id: 'rules-mgmt',     name: 'Rule management',       desc: 'Add/edit/remove rules as needed',                                                     total: 1, freq: 'monthly' },
+        ]
+      },
+      {
+        category: 'Macros',
+        items: [
+          { id: 'mac-audit',    name: 'Macro audit and suggestions',  desc: 'Review existing macros and surface areas for improvement',                                                 total: 3,    freq: 'one-off' },
+          { id: 'mac-basic',    name: 'Create basic macros',          desc: 'Implement up to 20 macros',                                                                                total: 2,    freq: 'one-off' },
+          { id: 'mac-advanced', name: 'Build advanced macros',        desc: 'Leverage macro variables to populate customer data from third-party apps',                                 total: 3,    freq: 'one-off' },
+          { id: 'mac-http',     name: 'HTTP macro actions',           desc: 'HTTP actions to trigger specific actions not included by default in Gorgias — scope varies',               total: null, freq: 'tbd'     },
+          { id: 'mac-mgmt',     name: 'Macro management',             desc: 'Add/edit/remove macros as needed',                                                                         total: 1,    freq: 'monthly' },
+        ]
+      },
+      {
+        category: 'Satisfaction Survey',
+        items: [
+          { id: 'csat-setup',     name: 'Satisfaction Survey: Set up and implement', desc: 'Add CSAT survey and begin to gather data',                                    total: 1.5, freq: 'one-off'  },
+          { id: 'csat-reporting', name: 'Satisfaction Survey: Reporting',             desc: 'Add CSAT reporting to monthly/quarterly business reviews',                   total: 1,   freq: 'as-needed' },
+        ]
+      },
+      {
+        category: 'AI Agent',
+        items: [
+          { id: 'ai-setup',    name: 'Setup AI Agent',                   desc: 'Connect channels, determine tone of voice, create guidance, setup AI ticket tagging',                                     total: 6,    freq: 'one-off' },
+          { id: 'ai-actions',  name: 'Create AI Agent Actions',          desc: 'Add pre-built actions connected to Gorgias apps',                                                                         total: 2,    freq: 'one-off' },
+          { id: 'ai-http',     name: 'Create Custom HTTP Actions',       desc: 'Build HTTP actions for AI Agent to perform utilizing the Gorgias API — scope varies',                                    total: null, freq: 'tbd'     },
+          { id: 'ai-optimize', name: 'Monthly optimization of AI Agent', desc: 'Coach AI Agent by reviewing and adding Guidance, setting up Actions, and writing Help Center content',                  total: 3,    freq: 'monthly' },
+        ]
+      },
+      {
+        category: 'Automation',
+        items: [
+          { id: 'auto-setup',    name: 'Order Management + Flows: Set Up',              desc: 'Connect Shopify to order management, create flows for chat, help center and contact form',  total: 3, freq: 'one-off' },
+          { id: 'auto-optimize', name: 'Order Management + Flows: Monthly Optimization',desc: 'Review flows success rate, order management success, and modify based on recommendations', total: 1, freq: 'monthly' },
+        ]
+      },
+      {
+        category: 'Business Reviews',
+        items: [
+          { id: 'br-perf',    name: 'Performance analysis (monthly or quarterly)',       desc: 'Review key metrics and offer 3–5 actionable suggestions for improvement',                     total: 4, freq: 'as-needed' },
+          { id: 'br-train',   name: 'Agent Training Workshop',                           desc: 'Run a workshop to get agents up to speed on how to work using Gorgias',                       total: 4, freq: 'as-needed' },
+          { id: 'br-office',  name: 'Office Hours for Agents',                           desc: 'Host office hours where agents can come and ask questions about using Gorgias',               total: 1, freq: 'as-needed' },
+          { id: 'br-features',name: 'Monthly new features implementation & maintenance', desc: 'Highlight key features launched from Gorgias, explain their purpose, and implement them',    total: 3, freq: 'as-needed' },
+        ]
+      },
+    ];
+
+    // ─────────────────────────────────────────────
+    // PROPOSAL DATA — value statements + impact
+    // ─────────────────────────────────────────────
+    const PROPOSAL_DATA = {
+      'Pre-Implementation': {
+        value: 'Starting with a clear strategy prevents the most expensive mistakes — the ones you don\'t discover until your helpdesk is fully live. A strategy guide and audit ensure every configuration choice is intentional, your platform matches how your team works, and your onboarding timeline is realistic. Done right, it compresses time-to-value and avoids costly rework down the line.',
+        impacts: { frt: true, resolution: true, csat: true, selfServe: false, automation: false },
+        outcomes: ['Saved time', 'Saved money'],
+      },
+      'Account Setup': {
+        value: 'Proper account configuration is the foundation of a well-run Gorgias instance. Getting users, teams, permissions, and channel connections right from the start means agents can focus on customers — not workarounds. Correct business hours and routing rules also ensure SLAs are realistic and achievable from day one.',
+        impacts: { frt: true, resolution: true, csat: true, selfServe: false, automation: true },
+        outcomes: ['Saved time'],
+      },
+      'Integrations': {
+        value: 'When your tech stack connects directly into Gorgias, agents never need to switch tabs. Order history, subscription status, loyalty points, and shipping details are all visible in the ticket sidebar — right where decisions are made. The result is faster replies, fewer mistakes, and customers who feel genuinely understood rather than passed around.',
+        impacts: { frt: true, resolution: true, csat: true, selfServe: false, automation: true },
+        outcomes: ['Saved time', 'Saved money'],
+      },
+      'Help Center': {
+        value: 'A well-built Help Center is your most scalable support agent. It works 24/7, never needs training, and can handle thousands of customers simultaneously. Every article that deflects a ticket is time your team can spend on complex issues — and revenue-driving conversations. Self-serve also reduces the urgency of first-contact resolution, since customers can answer their own questions before a ticket is ever created.',
+        impacts: { frt: false, resolution: true, csat: true, selfServe: true, automation: true },
+        outcomes: ['Saved time', 'Saved money', 'Increased sales'],
+      },
+      'Ticket Management': {
+        value: 'How tickets flow through your helpdesk determines how fast your team can move. Smart views surface the right tickets at the right time, structured fields capture consistent data, and automated assignment routes issues to the right agent without manual triage. Together, these eliminate the coordination overhead that slows teams down and lets high-priority issues fall through the cracks.',
+        impacts: { frt: true, resolution: true, csat: true, selfServe: false, automation: true },
+        outcomes: ['Saved time'],
+      },
+      'Tags': {
+        value: 'Tags are the connective tissue of your Gorgias data. A consistent tagging strategy makes support data searchable, reporting meaningful, and automation more powerful. Over time, a well-maintained tag library becomes a genuine competitive advantage — enabling you to spot emerging issues early, measure campaign impact, and prove the ROI of your support operation.',
+        impacts: { frt: true, resolution: true, csat: true, selfServe: false, automation: true },
+        outcomes: ['Saved time', 'Saved money'],
+      },
+      'Rules': {
+        value: 'Rules are where Gorgias earns its keep. From auto-closing spam to routing VIP tickets to prioritizing time-sensitive orders, rules handle the work that would otherwise require manual review — consistently, at scale, around the clock. Well-built rules mean your team wakes up every morning with a triaged, prioritized queue rather than a flood.',
+        impacts: { frt: true, resolution: true, csat: true, selfServe: false, automation: true },
+        outcomes: ['Saved time', 'Saved money'],
+      },
+      'Macros': {
+        value: 'Macros replace repetitive typing with one-click precision. With dynamic variables pulling in order numbers, tracking links, customer names, and third-party data, agents send personalized, accurate responses in seconds rather than minutes. Handle time drops, response consistency improves, and CSAT tends to follow — because customers get faster, more accurate answers.',
+        impacts: { frt: true, resolution: true, csat: true, selfServe: false, automation: false },
+        outcomes: ['Saved time'],
+      },
+      'Satisfaction Survey': {
+        value: 'You can\'t improve what you don\'t measure. CSAT data tells you which agents are excelling, which ticket types frustrate customers most, and whether the changes you\'re making are actually working. Regular reporting turns customer sentiment from anecdote into strategy — giving leadership the evidence to invest in the right improvements and recognize top performers.',
+        impacts: { frt: false, resolution: false, csat: true, selfServe: false, automation: false },
+        outcomes: ['Saved money', 'Increased sales'],
+      },
+      'AI Agent': {
+        value: 'Gorgias AI Agent resolves routine inquiries instantly — order status, return requests, FAQs — without a human in the loop, at any hour. Set up and optimized well, it handles a significant share of your ticket volume automatically, freeing your team for the conversations that genuinely require human judgment. Every ticket the AI resolves is time saved, cost avoided, and a customer who got an instant answer instead of waiting.',
+        impacts: { frt: true, resolution: true, csat: true, selfServe: true, automation: true },
+        outcomes: ['Saved time', 'Saved money', 'Increased sales'],
+      },
+      'Automation': {
+        value: 'Order Management flows give customers instant, self-serve access to their order details — directly inside chat, your contact form, and Help Center. Order status is your most common ticket type, and handling it automatically at any hour reduces inbound volume, cuts agent handle time on low-value requests, and gives customers the instant gratification that drives repeat purchases.',
+        impacts: { frt: true, resolution: true, csat: true, selfServe: true, automation: true },
+        outcomes: ['Saved time', 'Saved money', 'Increased sales'],
+      },
+      'Business Reviews': {
+        value: 'Support data is only valuable if it informs decisions. Regular performance analysis surfaces what\'s working, identifies where to focus next, and gives you the evidence to demonstrate your team\'s impact to leadership. Structured reviews — monthly or quarterly — turn Gorgias from a helpdesk into a strategic asset, and turn your agency from a vendor into a trusted partner.',
+        impacts: { frt: true, resolution: true, csat: true, selfServe: false, automation: false },
+        outcomes: ['Saved money', 'Increased sales'],
+      },
+    };
+
+    const IMPACT_META = [
+      { key: 'frt',        icon: '⚡', label: 'First\nResponse Time' },
+      { key: 'resolution', icon: '⏱',  label: 'Resolution\nTime'         },
+      { key: 'csat',       icon: '⭐', label: 'Customer\nSatisfaction'    },
+      { key: 'selfServe',  icon: '🔍', label: 'Self-Serve\nAbility'       },
+      { key: 'automation', icon: '⚙️', label: 'Automation'                },
+    ];
+
+    const OUTCOME_STYLES = {
+      'Saved time':      'outcome-time',
+      'Saved money':     'outcome-money',
+      'Increased sales': 'outcome-sales',
+    };
+
+    // ─────────────────────────────────────────────
+    // STATE
+    // ─────────────────────────────────────────────
+    const selected  = new Set();
+    const tbdHours  = {};
+    let partnerLogoURL = null;
+
+    // ─────────────────────────────────────────────
+    // PARTNER LOGO
+    // ─────────────────────────────────────────────
+    document.getElementById('partner_logo_input').addEventListener('change', function () {
+      const file = this.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        partnerLogoURL = e.target.result;
+        document.getElementById('logo-preview-img').src = partnerLogoURL;
+        document.getElementById('logo-upload-hint').style.display = 'none';
+        document.getElementById('logo-preview').classList.add('visible');
+        updateCobranding();
+        updateInvoice();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function removeLogo() {
+      partnerLogoURL = null;
+      document.getElementById('partner_logo_input').value = '';
+      document.getElementById('logo-preview-img').src = '';
+      document.getElementById('logo-upload-hint').style.display = '';
+      document.getElementById('logo-preview').classList.remove('visible');
+      updateCobranding();
+      updateInvoice();
+    }
+
+    function updateCobranding() {
+      const el = document.getElementById('inv-cobranding');
+      if (partnerLogoURL) {
+        el.innerHTML = `
+          <img src="${partnerLogoURL}" alt="Partner" class="inv-partner-logo">
+          <span class="inv-cobranding-sep">×</span>
+          <img src="gorgias-logo.png" alt="Gorgias" height="18"
+            style="filter: grayscale(1); opacity: 0.3;" onerror="this.style.display='none'">
+        `;
+      } else {
+        el.innerHTML = `
+          <img src="gorgias-logo.png" alt="Gorgias" height="18"
+            style="filter: grayscale(1); opacity: 0.3;" onerror="this.style.display='none'">
+        `;
+      }
+    }
+
+    // ─────────────────────────────────────────────
+    // RENDER SERVICES
+    // ─────────────────────────────────────────────
+    function renderServices() {
+      const container = document.getElementById('services-list');
+
+      SERVICES.forEach(cat => {
+        const block = document.createElement('div');
+        block.className = 'category-block';
+
+        const header = document.createElement('div');
+        header.className = 'category-header';
+        header.innerHTML = `
+          <span class="category-name">${cat.category}</span>
+          <button class="category-select-all" data-cat="${cat.category}">Select all</button>
+        `;
+        block.appendChild(header);
+
+        cat.items.forEach(item => {
+          const freqClass = {
+            'one-off':   'freq-one-off',
+            'monthly':   'freq-monthly',
+            'as-needed': 'freq-as-needed',
+            'tbd':       'freq-tbd',
+          }[item.freq];
+
+          const freqLabel = {
+            'one-off':   'One-off',
+            'monthly':   'Monthly',
+            'as-needed': 'As needed',
+            'tbd':       'TBD',
+          }[item.freq];
+
+          const freqTooltip = {
+            'one-off':   'Billed once. Scoped to initial setup or a specific project.',
+            'monthly':   'Part of an ongoing retainer. Included every month.',
+            'as-needed': 'Billed per engagement. Frequency and scope vary by client.',
+            'tbd':       'Hours to be determined. Enter an estimate below to include in pricing.',
+          }[item.freq];
+
+          const hrsDisplay = item.total !== null
+            ? `${item.total} hr${item.total !== 1 ? 's' : ''}`
+            : 'Custom';
+
+          const row = document.createElement('div');
+          row.className = 'service-row';
+          row.id = `row-${item.id}`;
+
+          row.innerHTML = `
+            <label class="service-item" for="cb-${item.id}">
+              <input type="checkbox" id="cb-${item.id}" data-id="${item.id}">
+              <div class="service-info">
+                <div class="service-name">${item.name}</div>
+                <div class="service-desc">${item.desc}</div>
+              </div>
+              <div class="service-meta">
+                <div class="service-hrs">${hrsDisplay}</div>
+                <span class="freq-badge ${freqClass}" data-tooltip="${freqTooltip}">${freqLabel}</span>
+              </div>
+            </label>
+            ${item.freq === 'tbd' ? `
+              <div class="tbd-wrap" id="tbd-wrap-${item.id}">
+                <input type="number" id="tbd-hrs-${item.id}" min="0" step="0.5" placeholder="0">
+                <span class="tbd-wrap-label">estimated hours</span>
+              </div>
+            ` : ''}
+          `;
+
+          block.appendChild(row);
+        });
+
+        container.appendChild(block);
+      });
+
+      // Checkbox events
+      document.querySelectorAll('.service-item input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', () => {
+          const id = cb.dataset.id;
+          if (cb.checked) {
+            selected.add(id);
+            document.getElementById(`row-${id}`)?.classList.add('checked');
+            document.getElementById(`tbd-wrap-${id}`)?.classList.add('open');
+          } else {
+            selected.delete(id);
+            document.getElementById(`row-${id}`)?.classList.remove('checked');
+            const wrap = document.getElementById(`tbd-wrap-${id}`);
+            if (wrap) {
+              wrap.classList.remove('open');
+              document.getElementById(`tbd-hrs-${id}`).value = '';
+              delete tbdHours[id];
+            }
+          }
+          updateInvoice();
+        });
+      });
+
+      // TBD inputs
+      document.querySelectorAll('[id^="tbd-hrs-"]').forEach(input => {
+        input.addEventListener('input', () => {
+          const id = input.id.replace('tbd-hrs-', '');
+          tbdHours[id] = parseFloat(input.value) || 0;
+          updateInvoice();
+        });
+        input.addEventListener('click', e => e.stopPropagation());
+        input.addEventListener('mousedown', e => e.stopPropagation());
+      });
+
+      // Select all buttons
+      document.querySelectorAll('.category-select-all').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const catName = btn.dataset.cat;
+          const cat = SERVICES.find(c => c.category === catName);
+          if (!cat) return;
+          const allChecked = cat.items.every(i => selected.has(i.id));
+          cat.items.forEach(item => {
+            const cb = document.getElementById(`cb-${item.id}`);
+            if (allChecked) {
+              cb.checked = false;
+              selected.delete(item.id);
+              document.getElementById(`row-${item.id}`)?.classList.remove('checked');
+              const wrap = document.getElementById(`tbd-wrap-${item.id}`);
+              if (wrap) {
+                wrap.classList.remove('open');
+                document.getElementById(`tbd-hrs-${item.id}`).value = '';
+                delete tbdHours[item.id];
+              }
+            } else {
+              cb.checked = true;
+              selected.add(item.id);
+              document.getElementById(`row-${item.id}`)?.classList.add('checked');
+              document.getElementById(`tbd-wrap-${item.id}`)?.classList.add('open');
+            }
+          });
+          updateInvoice();
+        });
+      });
+    }
+
+    // ─────────────────────────────────────────────
+    // UPDATE INVOICE
+    // ─────────────────────────────────────────────
+    function updateInvoice() {
+      const rate     = parseFloat(document.getElementById('hourly_rate').value) || 0;
+      const currency = document.getElementById('currency_sel').value || 'USD';
+      const fmt = n => rate > 0
+        ? new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: 0 }).format(n)
+        : '—';
+
+      // Client info
+      const merchant = document.getElementById('merchant_name').value.trim() || '—';
+      const rawDate  = document.getElementById('invoice_date').value;
+      const dateStr  = rawDate
+        ? new Date(rawDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+        : '—';
+      const approver = document.getElementById('approver_name').value.trim() || '—';
+
+      document.getElementById('inv-merchant').textContent = merchant;
+      document.getElementById('inv-meta').textContent = `Date — ${dateStr}  ·  Approver — ${approver}`;
+
+      // Bucket items
+      const oneoff = [], monthly = [], asneeded = [], tbd = [];
+      SERVICES.forEach(cat => {
+        cat.items.forEach(item => {
+          if (!selected.has(item.id)) return;
+          if      (item.freq === 'one-off')   oneoff.push(item);
+          else if (item.freq === 'monthly')   monthly.push(item);
+          else if (item.freq === 'as-needed') asneeded.push(item);
+          else if (item.freq === 'tbd')       tbd.push(item);
+        });
+      });
+
+      const line = (name, hrs, cost) => `
+        <div class="inv-line">
+          <div class="inv-line-name">${name}</div>
+          <div class="inv-line-right">
+            <div class="inv-line-cost">${cost}</div>
+            <div class="inv-line-hrs">${hrs}</div>
+          </div>
+        </div>`;
+
+      // One-off
+      const oneoffEl  = document.getElementById('inv-oneoff-lines');
+      const oneoffSub = document.getElementById('inv-oneoff-sub');
+      if (!oneoff.length) {
+        oneoffEl.innerHTML = '<div class="inv-empty">No services selected</div>';
+        oneoffSub.style.display = 'none';
+      } else {
+        const hrs = oneoff.reduce((s, i) => s + i.total, 0);
+        oneoffEl.innerHTML = oneoff.map(i => line(i.name, `${i.total} hr${i.total !== 1 ? 's' : ''}`, fmt(i.total * rate))).join('');
+        oneoffSub.style.display = 'flex';
+        document.getElementById('inv-oneoff-hrs').textContent  = `${hrs} hrs total`;
+        document.getElementById('inv-oneoff-cost').textContent = fmt(hrs * rate);
+      }
+
+      // Monthly
+      const monthlyEl  = document.getElementById('inv-monthly-lines');
+      const monthlySub = document.getElementById('inv-monthly-sub');
+      if (!monthly.length) {
+        monthlyEl.innerHTML = '<div class="inv-empty">No services selected</div>';
+        monthlySub.style.display = 'none';
+      } else {
+        const hrs = monthly.reduce((s, i) => s + i.total, 0);
+        monthlyEl.innerHTML = monthly.map(i => line(i.name, `${i.total} hr${i.total !== 1 ? 's' : ''}/mo`, fmt(i.total * rate))).join('');
+        monthlySub.style.display = 'flex';
+        document.getElementById('inv-monthly-hrs').textContent  = `${hrs} hrs/mo`;
+        document.getElementById('inv-monthly-cost').textContent = rate > 0 ? fmt(hrs * rate) + '/mo' : '—';
+      }
+
+      // As-needed
+      const asEl = document.getElementById('inv-asneeded-section');
+      if (!asneeded.length) {
+        asEl.style.display = 'none';
+      } else {
+        asEl.style.display = 'block';
+        document.getElementById('inv-asneeded-lines').innerHTML = asneeded.map(i =>
+          line(i.name, `${i.total} hr${i.total !== 1 ? 's' : ''} ea.`, rate > 0 ? fmt(i.total * rate) + ' ea.' : '—')
+        ).join('');
+      }
+
+      // TBD
+      const tbdEl  = document.getElementById('inv-tbd-section');
+      const tbdSub = document.getElementById('inv-tbd-sub');
+      if (!tbd.length) {
+        tbdEl.style.display = 'none';
+      } else {
+        tbdEl.style.display = 'block';
+        let tbdSum = 0;
+        document.getElementById('inv-tbd-lines').innerHTML = tbd.map(i => {
+          const h = tbdHours[i.id] || 0;
+          tbdSum += h;
+          return line(i.name, h > 0 ? `${h} hr${h !== 1 ? 's' : ''}` : 'TBD', h > 0 ? fmt(h * rate) : '—');
+        }).join('');
+        if (tbdSum > 0 && rate > 0) {
+          tbdSub.style.display = 'flex';
+          document.getElementById('inv-tbd-hrs').textContent  = `${tbdSum} hrs total`;
+          document.getElementById('inv-tbd-cost').textContent = fmt(tbdSum * rate);
+        } else {
+          tbdSub.style.display = 'none';
+        }
+      }
+
+      // Totals
+      const oneoffHrs  = oneoff.reduce((s, i) => s + i.total, 0);
+      const tbdSum     = tbd.reduce((s, i) => s + (tbdHours[i.id] || 0), 0);
+      const monthlyHrs = monthly.reduce((s, i) => s + i.total, 0);
+      const grandHrs   = oneoffHrs + tbdSum + monthlyHrs;
+
+      document.getElementById('tot-oneoff').textContent  = rate > 0 && (oneoffHrs + tbdSum) > 0 ? fmt((oneoffHrs + tbdSum) * rate) : '—';
+      document.getElementById('tot-monthly').textContent = rate > 0 && monthlyHrs > 0 ? fmt(monthlyHrs * rate) + '/mo' : '—';
+      document.getElementById('tot-grand').textContent   = rate > 0 && grandHrs > 0 ? fmt(grandHrs * rate) : '—';
+
+      const rateNote = document.getElementById('inv-rate-note');
+      if (rate > 0) {
+        rateNote.style.display = 'block';
+        rateNote.textContent   = `@ ${fmt(rate)}/hr · ${currency}`;
+      } else {
+        rateNote.style.display = 'none';
+      }
+    }
+
+    // ─────────────────────────────────────────────
+    // PROPOSAL
+    // ─────────────────────────────────────────────
+    function openProposal() {
+      generateProposal();
+      document.getElementById('proposal-overlay').classList.add('open');
+      document.body.classList.add('proposal-open');
+      document.getElementById('proposal-overlay').scrollTop = 0;
+    }
+
+    function closeProposal() {
+      document.getElementById('proposal-overlay').classList.remove('open');
+      document.body.classList.remove('proposal-open');
+    }
+
+    function generateProposal() {
+      const merchant  = document.getElementById('merchant_name').value.trim() || 'Your Client';
+      const partner   = document.getElementById('partner_name').value.trim()  || 'Your Agency';
+      const approver  = document.getElementById('approver_name').value.trim() || '—';
+      const rawDate   = document.getElementById('invoice_date').value;
+      const dateStr   = rawDate
+        ? new Date(rawDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+        : new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+      // Which categories have selected items?
+      const activeCategories = SERVICES.filter(cat =>
+        cat.items.some(item => selected.has(item.id))
+      );
+
+      const page = document.getElementById('proposal-page');
+
+      if (!activeCategories.length) {
+        page.innerHTML = `
+          <div class="proposal-empty-state">
+            <div class="proposal-empty-icon">📋</div>
+            <div class="proposal-empty-title">No services selected yet</div>
+            <p class="proposal-empty-text">Go back to the builder and select the services you'll deliver.<br>The proposal will populate automatically.</p>
+          </div>`;
+        return;
+      }
+
+      // Aggregate impacts across all selected categories
+      const allImpacts = { frt: false, resolution: false, csat: false, selfServe: false, automation: false };
+      const allOutcomesSet = new Set();
+      activeCategories.forEach(cat => {
+        const pd = PROPOSAL_DATA[cat.category];
+        if (!pd) return;
+        Object.keys(allImpacts).forEach(k => { if (pd.impacts[k]) allImpacts[k] = true; });
+        pd.outcomes.forEach(o => allOutcomesSet.add(o));
+      });
+
+      // Cover logos
+      let coverLogos = '';
+      if (partnerLogoURL) {
+        coverLogos = `
+          <img src="${partnerLogoURL}" class="proposal-cover-logo-partner" alt="${partner}">
+          <span class="proposal-cover-sep">×</span>
+          <img src="gorgias-logo.png" alt="Gorgias" height="32" style="filter: brightness(0) invert(1);" onerror="this.style.display='none'">
+        `;
+      } else {
+        coverLogos = `
+          <img src="gorgias-logo.png" alt="Gorgias" height="32" style="filter: brightness(0) invert(1);" onerror="this.style.display='none'">
+        `;
+      }
+
+      // Intro
+      const selectedCount = activeCategories.reduce((s, c) => s + c.items.filter(i => selected.has(i.id)).length, 0);
+      const catCount = activeCategories.length;
+
+      // Category cards
+      const categoryCards = activeCategories.map(cat => {
+        const pd = PROPOSAL_DATA[cat.category];
+        if (!pd) return '';
+
+        const selectedItems = cat.items.filter(i => selected.has(i.id));
+
+        const chips = selectedItems.map(i => `<span class="proposal-chip">${i.name}</span>`).join('');
+
+        const impactCells = IMPACT_META.map(m => `
+          <div class="impact-cell ${pd.impacts[m.key] ? 'active' : 'inactive'}">
+            <div class="impact-icon">${m.icon}</div>
+            <div class="impact-name">${m.label.replace('\n', '<br>')}</div>
+            <div class="impact-tick">${pd.impacts[m.key] ? '✓' : '—'}</div>
+          </div>
+        `).join('');
+
+        const outcomeTags = pd.outcomes.map(o =>
+          `<span class="outcome-tag ${OUTCOME_STYLES[o] || ''}">${o}</span>`
+        ).join('');
+
+        return `
+          <div class="proposal-card">
+            <div class="proposal-card-eyebrow">${cat.category}</div>
+            <div class="proposal-card-title">${cat.category}</div>
+            <div class="proposal-services-chips">${chips}</div>
+            <p class="proposal-value">${pd.value}</p>
+            <div class="proposal-impact-label">Impact on</div>
+            <div class="proposal-impact-grid">${impactCells}</div>
+            <div class="proposal-outcomes-label">Business outcomes</div>
+            <div class="proposal-outcomes">${outcomeTags}</div>
+          </div>
+        `;
+      }).join('');
+
+      // Summary impact cells
+      const summaryImpactCells = IMPACT_META.map(m => `
+        <div class="summary-impact-cell ${allImpacts[m.key] ? 'lit' : ''}">
+          <div class="summary-impact-icon">${m.icon}</div>
+          <div class="summary-impact-name">${m.label.replace('\n', '<br>')}</div>
+        </div>
+      `).join('');
+
+      // Summary outcome tags
+      const summaryOutcomes = [...allOutcomesSet].map(o =>
+        `<span class="outcome-tag ${OUTCOME_STYLES[o] || ''}">${o}</span>`
+      ).join('');
+
+      page.innerHTML = `
+        <div class="proposal-cover">
+          <div class="proposal-cover-logos">${coverLogos}</div>
+          <div class="proposal-cover-eyebrow">Service Proposal</div>
+          <div class="proposal-cover-title">Gorgias Services<br>for ${merchant}</div>
+          <div class="proposal-cover-grid">
+            <div class="proposal-cover-item">
+              <label>Prepared for</label>
+              <span>${merchant}</span>
+            </div>
+            <div class="proposal-cover-item">
+              <label>Prepared by</label>
+              <span>${partner}</span>
+            </div>
+            <div class="proposal-cover-item">
+              <label>Gorgias approver</label>
+              <span>${approver}</span>
+            </div>
+            <div class="proposal-cover-item">
+              <label>Date</label>
+              <span>${dateStr}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="proposal-intro">
+          <div class="proposal-intro-label">Overview</div>
+          <div class="proposal-intro-title">What's included in this proposal</div>
+          <p class="proposal-intro-text">
+            This document outlines the ${selectedCount} Gorgias service${selectedCount !== 1 ? 's' : ''} across ${catCount} area${catCount !== 1 ? 's' : ''} selected for ${merchant}. Each section explains the work involved, how it improves your support operation, and the business outcomes it drives. Services are designed to reduce manual effort, lower operational costs, and create the kind of customer experience that builds long-term revenue.
+          </p>
+        </div>
+
+        ${categoryCards}
+
+        <div class="proposal-summary">
+          <div class="proposal-summary-eyebrow">Business impact</div>
+          <div class="proposal-summary-title">What this investment delivers</div>
+          <p class="proposal-summary-sub">Across the services selected, here's the combined impact on your support operation and business outcomes.</p>
+          <div class="summary-impact-grid">${summaryImpactCells}</div>
+          <div class="proposal-summary-outcomes">${summaryOutcomes}</div>
+        </div>
+      `;
+    }
+
+    // ─────────────────────────────────────────────
+    // CLEAR ALL
+    // ─────────────────────────────────────────────
+    function clearAll() {
+      selected.clear();
+      Object.keys(tbdHours).forEach(k => delete tbdHours[k]);
+      document.querySelectorAll('.service-item input[type="checkbox"]').forEach(cb => { cb.checked = false; });
+      document.querySelectorAll('.service-row.checked').forEach(r => r.classList.remove('checked'));
+      document.querySelectorAll('.tbd-wrap.open').forEach(w => {
+        w.classList.remove('open');
+        w.querySelector('input').value = '';
+      });
+      updateInvoice();
+    }
+
+    // ─────────────────────────────────────────────
+    // INIT
+    // ─────────────────────────────────────────────
+    renderServices();
+    document.getElementById('invoice_date').valueAsDate = new Date();
+
+    ['merchant_name', 'invoice_date', 'approver_name', 'hourly_rate', 'currency_sel', 'partner_name'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updateInvoice);
+      document.getElementById(id).addEventListener('change', updateInvoice);
+    });
+
+    updateInvoice();
+  </script>
+
+</body>
+</html>
